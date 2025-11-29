@@ -4,8 +4,23 @@ class AnalizadorSemantico:
 
     def analizar(self, arbol):
         for instruccion in arbol['instrucciones']:
-            if instruccion['tipo'] in ['mostrar', 'decir']:
-                if not isinstance(instruccion['valor'], str):
-                    raise Exception(f"Error semántico: se esperaba un string")
-
+            self.analizar_expresion(instruccion['valor'])
         return True
+
+    def analizar_expresion(self, expresion):
+        if expresion['tipo'] == 'numero':
+            return 'numero'
+        elif expresion['tipo'] == 'string':
+            return 'string'
+        elif expresion['tipo'] == 'operacion_binaria':
+            tipo_izq = self.analizar_expresion(expresion['izquierda'])
+            tipo_der = self.analizar_expresion(expresion['derecha'])
+
+            # Permitir operaciones entre mismos tipos
+            if tipo_izq == tipo_der:
+                return tipo_izq
+            else:
+                raise Exception(f"Error de tipos: {tipo_izq} y {tipo_der} no son compatibles")
+
+        # Si es otro tipo de expresión, retornar un tipo por defecto
+        return 'desconocido'

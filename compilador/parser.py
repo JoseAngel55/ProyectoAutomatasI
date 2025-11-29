@@ -24,21 +24,56 @@ class Parser:
         return {'tipo': 'programa', 'instrucciones': instrucciones}
 
     def parse_mostrar(self):
-        self.siguiente_token()
-
-        if self.token_actual.tipo == 'STRING':
-            valor = self.token_actual.valor
-            self.siguiente_token()
-            return {'tipo': 'mostrar', 'valor': valor}
-        else:
-            self.error("Se esperaba un string después de 'mostrar'")
+        self.siguiente_token()  # Saltar 'mostrar'
+        expresion = self.parse_expresion()
+        return {'tipo': 'mostrar', 'valor': expresion}
 
     def parse_decir(self):
-        self.siguiente_token()
+        self.siguiente_token()  # Saltar 'decir'
+        expresion = self.parse_expresion()
+        return {'tipo': 'decir', 'valor': expresion}
 
-        if self.token_actual.tipo == 'STRING':
-            valor = self.token_actual.valor
+    def parse_expresion(self):
+        return self.parse_termino()
+
+    def parse_termino(self):
+        nodo = self.parse_factor()
+
+        while self.token_actual.tipo in ['SUMA', 'RESTA']:
+            tipo_operador = self.token_actual.tipo
             self.siguiente_token()
-            return {'tipo': 'decir', 'valor': valor}
+            nodo = {
+                'tipo': 'operacion_binaria',
+                'operador': tipo_operador,
+                'izquierda': nodo,
+                'derecha': self.parse_factor()
+            }
+
+        return nodo
+
+    def parse_factor(self):
+        nodo = self.parse_primario()
+
+        while self.token_actual.tipo in ['MULTIPLICACION', 'DIVISION']:
+            tipo_operador = self.token_actual.tipo
+            self.siguiente_token()
+            nodo = {
+                'tipo': 'operacion_binaria',
+                'operador': tipo_operador,
+                'izquierda': nodo,
+                'derecha': self.parse_primario()
+            }
+
+        return nodo
+
+    def parse_primario(self):
+        token = self.token_actual
+
+        if token.tipo == 'NUMERO':
+            self.siguiente_token()
+            return {'tipo': 'numero', 'valor': token.valor}
+        elif token.tipo == 'STRING':
+            self.siguiente_token()
+            return {'tipo': 'string', 'valor': token.valor}
         else:
-            self.error("Se esperaba un string después de 'decir'")
+            self.error(f"Se esperaba número o string, se obtuvo {token.tipo}")

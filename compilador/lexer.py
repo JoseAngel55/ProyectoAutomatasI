@@ -15,6 +15,14 @@ class Lexer:
         'numero': 'NUMERO'
     }
 
+    #Operadores lol
+    OPERADORES = {
+        '+': 'SUMA',
+        '-': 'RESTA',
+        '*': 'MULTIPLICACION',
+        '/': 'DIVISION'
+    }
+
     #Constructor del lexer
     def __init__(self, texto):
         self.texto = texto
@@ -85,6 +93,11 @@ class Lexer:
                     return Token(self.PALABRAS_RESERVADAS[id_text], id_text, self.linea_actual)
                 else:
                     return Token('IDENTIFICADOR', id_text, self.linea_actual)
+
+            if self.caracter_actual in self.OPERADORES:
+                operador = self.caracter_actual
+                self.avanzar()
+                return Token(self.OPERADORES[operador], operador, self.linea_actual)
 
             self.error()
 
