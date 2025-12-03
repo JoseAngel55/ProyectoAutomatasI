@@ -6,11 +6,11 @@ class Simbolo:
     Guarda: nombre, tipo, si fue usada, etc.
     """
     def __init__(self, nombre, tipo, linea=None):
-        self.nombre = nombre     
-        self.tipo = tipo         
-        self.linea = linea       
+        self.nombre = nombre      # Ej: "x", "mensaje"
+        self.tipo = tipo          # "entero" o "texto"
+        self.linea = linea        # Línea donde se declaró (opcional)
         self.usada = False        # Si la variable se ha usado en alguna expresión
-
+    
     def __repr__(self):
         return f"Simbolo({self.nombre}, tipo={self.tipo}, linea={self.linea})"
 
@@ -59,7 +59,42 @@ class TablaSimbolos:
         if nombre in self.simbolos:
             self.simbolos[nombre].usada = True
     
-
+    def obtener_tipo(self, nombre):
+        """
+        Obtiene el tipo de una variable (entero o texto).
+        Retorna None si no existe.
+        """
+        simbolo = self.buscar(nombre)
+        if simbolo:
+            return simbolo.tipo
+        return None
+    
+    def variables_no_usadas(self):
+        """
+        Retorna una lista de variables declaradas pero nunca usadas.
+        Útil para advertencias (warnings).
+        """
+        return [s for s in self.simbolos.values() if not s.usada]
+    
+    def error(self, msg):
+        """
+        Registra un error relacionado con símbolos.
+        """
+        self.errores.append(f"[Error de Símbolos] {msg}")
+    
+    def mostrar_tabla(self):
+        """
+        Imprime toda la tabla de símbolos (útil para debugging).
+        """
+        print("\n=== TABLA DE SÍMBOLOS ===")
+        if not self.simbolos:
+            print("(vacía)")
+        else:
+            for nombre, simbolo in self.simbolos.items():
+                usada_str = "✓" if simbolo.usada else "✗"
+                print(f"  {nombre:15} | tipo: {simbolo.tipo:10} | usada: {usada_str}")
+    
+    def mostrar_errores(self):
         """
         Imprime todos los errores encontrados.
         """
