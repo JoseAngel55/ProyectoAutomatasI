@@ -1,9 +1,6 @@
 entero edad;
-edad = 25;
-
-texto mensaje;
-mensaje = "Cadena sin cerrar;
-
+edad = 16;
+MOSTRAR edad;
+MOSTRAR "Hola Mundo;
+MOSTRAR "hhmjkh
 entero num@ero;
-
-MOSTRAR "Error en cadena

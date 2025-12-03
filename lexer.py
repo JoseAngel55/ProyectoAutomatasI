@@ -1,5 +1,3 @@
-import string
-
 class Token:
     def __init__(self, tipo, valor):
         self.tipo = tipo
@@ -21,72 +19,93 @@ class Lexer:
         self.codigo = codigo
         self.pos = 0
         self.tokens = []
+        self.errores = []
 
     def avanzar(self):
         self.pos += 1
-        return self.pos < len(self.codigo)
 
-    def caracter_actual(self):
+    def caracter(self):
         if self.pos < len(self.codigo):
             return self.codigo[self.pos]
         return None
 
+    def error(self, msg):
+        self.errores.append(f"[Error Léxico] Pos {self.pos}: {msg}")
+
     def analizar(self):
 
         while self.pos < len(self.codigo):
-            c = self.caracter_actual()
+            c = self.caracter()
 
-            # Ignorar espacios y saltos
-            if c in [" ", "\n", "\t", "\r"]:
-                self.pos += 1
+            # Espacios
+            if c in " \n\r\t":
+                self.avanzar()
                 continue
 
+            # Números
             if c.isdigit():
-                numero = ""
-                while self.caracter_actual() and self.caracter_actual().isdigit():
-                    numero += self.caracter_actual()
-                    self.pos += 1
-                self.tokens.append(Token("NUMERO", numero))
+                num = ""
+                while self.caracter() and self.caracter().isdigit():
+                    num += self.caracter()
+                    self.avanzar()
+                self.tokens.append(Token("NUMERO", num))
                 continue
 
+            # Identificadores y reservadas
             if c.isalpha():
                 ident = ""
-                while self.caracter_actual() and (self.caracter_actual().isalnum() or self.caracter_actual() == "_"):
-                    ident += self.caracter_actual()
-                    self.pos += 1
+                while self.caracter() and (self.caracter().isalnum() or self.caracter() == "_"):
+                    ident += self.caracter()
+                    self.avanzar()
 
-                # Verificar si es reservada
                 if ident in RESERVADAS:
                     self.tokens.append(Token(RESERVADAS[ident], ident))
                 else:
                     self.tokens.append(Token("IDENTIFICADOR", ident))
                 continue
 
+            # Cadenas entre comillas
             if c == '"':
-                self.pos += 1
+                self.avanzar()
                 cadena = ""
-                while self.caracter_actual() != '"' and self.caracter_actual() is not None:
-                    cadena += self.caracter_actual()
-                    self.pos += 1
+                cerrado = False
 
-                # Cerrar comilla
-                if self.caracter_actual() == '"':
-                    self.pos += 1
-                    self.tokens.append(Token("TEXTO", cadena))
-                else:
-                    raise Exception("Error léxico: cadena sin cerrar")
+                while self.caracter() is not None:
+                    actual = self.caracter()
+
+                    if actual == '"':
+                        cerrado = True
+                        self.avanzar()
+                        self.tokens.append(Token("TEXTO", cadena))
+                        break
+
+                    if actual == "\n":
+                        break
+
+                    cadena += actual
+                    self.avanzar()
+
+                if not cerrado:
+                    self.error("Cadena sin cerrar con comillas")
+                    while self.caracter() not in [None, "\n"]:
+                        self.avanzar()
+
                 continue
 
+            # Operadores
             if c in "+-*/=":
                 self.tokens.append(Token("OP", c))
-                self.pos += 1
+                self.avanzar()
                 continue
 
+            # Punto y coma
             if c == ";":
                 self.tokens.append(Token("PUNTO_Y_COMA", ";"))
-                self.pos += 1
+                self.avanzar()
                 continue
 
-            raise Exception(f"Error léxico: carácter desconocido '{c}' en posición {self.pos}")
+            # Símbolo ilegal
+            self.error(f"Símbolo inválido '{c}'")
+            self.avanzar()
 
-        return self.tokens
+        return self.tokens, self.errores
