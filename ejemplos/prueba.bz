@@ -1,0 +1,19 @@
+entero edad;
+edad = 25;
+MOSTRAR edad;
+
+entero suma;
+suma = 10 + 15;
+MOSTRAR suma;
+
+texto nombre;
+nombre = "Juan";
+MOSTRAR nombre;
+
+texto mensaje;
+mensaje = "Hola Mundo";
+MOSTRAR mensaje;
+
+entero resultado;
+resultado = 100 - 50 * 2 / 10;
+MOSTRAR resultado;
