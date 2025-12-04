@@ -35,6 +35,3 @@ Sin redeclaraciones
 Compatibilidad de tipos
 Operaciones entre tipos iguales
 No división por cero
-
-
-

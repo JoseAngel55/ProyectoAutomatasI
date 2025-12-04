@@ -1,0 +1,3 @@
+entero numero;
+numero = "hola";
+MOSTRAR numero;

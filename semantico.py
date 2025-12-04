@@ -110,6 +110,16 @@ class AnalizadorSemantico:
                     if tipo_izq != "entero" or tipo_der != "entero":
                         self.error(f"Operación '{nodo.op}' solo válida entre enteros")
                         return None
+
+                    # 🚫 Validación de división entre cero (solo cuando es literal 0)
+                    if (
+                        nodo.op == "/" and
+                        isinstance(nodo.derecha, NodoNumero) and
+                        nodo.derecha.valor == 0
+                    ):
+                        self.error("División entre cero detectada")
+                        return None   # ← AQUÍ validamos división entre cero
+
                     return "entero"
 
                 # Concatenación de textos
@@ -118,8 +128,8 @@ class AnalizadorSemantico:
 
                 else:
                     self.error(f"Operación '{nodo.op}' no válida entre tipos '{tipo_izq}' y '{tipo_der}'")
-                    return None
-
+                    return 
+                
             return None
 
         self.error(f"Tipo de expresión no reconocida: {type(nodo)}")

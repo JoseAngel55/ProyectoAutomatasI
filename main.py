@@ -2,10 +2,11 @@ from lexer import Lexer
 from mi_parser import Parser
 from semantico import AnalizadorSemantico
 from mi_parser import NodoPrograma
+from interprete import Interprete
 import os
 
 def probar_ejemplos():
-    ruta = "../ejemplos"
+    ruta = "ejemplos"
 
     for archivo in os.listdir(ruta):
         if archivo.endswith(".bz"):
@@ -60,6 +61,10 @@ def probar_ejemplos():
             analizador.mostrar_errores()
 
             if resultado:
+                print("\n--- EJECUCIÓN ---")
+                interprete = Interprete(analizador.tabla)
+                interprete.ejecutar(ast)
+
                 print("COMPILACIÓN EXITOSA")
             else:
                 print("COMPILACIÓN FALLIDA (errores semánticos)")

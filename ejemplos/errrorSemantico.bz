@@ -1,0 +1,3 @@
+entero suma;
+suma = 10/0;
+MOSTRAR suma;
