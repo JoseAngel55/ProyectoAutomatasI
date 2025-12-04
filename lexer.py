@@ -8,7 +8,6 @@ class Token:
 
 RESERVADAS = {
     "MOSTRAR": "MOSTRAR",
-    "CAPTURAR": "CAPTURAR",
     "entero": "TIPO_ENTERO",
     "texto": "TIPO_TEXTO",
 }
