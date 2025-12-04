@@ -1,3 +1,3 @@
 entero numero;
-numero = "hola";
+numero = 9
 MOSTRAR numero;
