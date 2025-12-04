@@ -1,10 +1,11 @@
 from lexer import Lexer
 from mi_parser import Parser
+from semantico import AnalizadorSemantico
 from mi_parser import NodoPrograma
 import os
 
 def probar_ejemplos():
-    ruta = "ejemplos"
+    ruta = "../ejemplos"
 
     for archivo in os.listdir(ruta):
         if archivo.endswith(".bz"):
@@ -27,6 +28,10 @@ def probar_ejemplos():
                     print(e)
             else:
                 print("Sin errores léxicos ✔")
+
+            if errores:
+                print("Saltando análisis sintáctico/semántico por errores léxicos")
+                continue
             
             # analisis sintactico
             parser = Parser(tokens)        
@@ -43,6 +48,21 @@ def probar_ejemplos():
                     print(e)
             else:
                 print("Sin errores sintacticos ✔")
+
+            if errores_sintacticos:
+                print("Saltando análisis semántico por errores sintácticos")
+                continue
+
+            print("\n--- ANÁLISIS SEMÁNTICO ---")
+            analizador = AnalizadorSemantico()
+            resultado = analizador.analizar(ast)
+
+            analizador.mostrar_errores()
+
+            if resultado:
+                print("COMPILACIÓN EXITOSA")
+            else:
+                print("COMPILACIÓN FALLIDA (errores semánticos)")
 
 if __name__ == "__main__":
     probar_ejemplos()
